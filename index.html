@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>RobotSound.ai</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="description" content="RobotSound.ai — Independent AI music label." />
+<script>
+(function(){
+  var langs = ['ko', 'en', 'ja', 'zh-tw', 'es', 'pt-br', 'fr', 'de', 'it', 'ru', 'ms', 'mn', 'my', 'vi', 'ar', 'uk', 'id', 'km', 'th', 'fil', 'hi', 'tr', 'he', 'bn', 'fa', 'pl', 'ne'];
+  var map = {'zh':'zh-tw','pt':'pt-br','es':'es'};
+  var nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+  var pick = 'en';
+  var primary = nav.split('-')[0];
+  // direct full match
+  if (langs.indexOf(nav) >= 0) pick = nav;
+  // mapped (zh→zh-tw, pt→pt-br)
+  else if (map[primary] && langs.indexOf(map[primary]) >= 0) pick = map[primary];
+  // primary code match
+  else if (langs.indexOf(primary) >= 0) pick = primary;
+  window.location.replace('/' + pick + '/');
+})();
+</script>
+<link rel="alternate" hreflang="ko" href="/ko/" />
+<link rel="alternate" hreflang="en" href="/en/" />
+<link rel="alternate" hreflang="ja" href="/ja/" />
+<link rel="alternate" hreflang="zh-TW" href="/zh-tw/" />
+<link rel="alternate" hreflang="es-MX" href="/es/" />
+<link rel="alternate" hreflang="pt-BR" href="/pt-br/" />
+<link rel="alternate" hreflang="fr" href="/fr/" />
+<link rel="alternate" hreflang="de" href="/de/" />
+<link rel="alternate" hreflang="it" href="/it/" />
+<link rel="alternate" hreflang="ru" href="/ru/" />
+<link rel="alternate" hreflang="ms" href="/ms/" />
+<link rel="alternate" hreflang="mn" href="/mn/" />
+<link rel="alternate" hreflang="my" href="/my/" />
+<link rel="alternate" hreflang="vi" href="/vi/" />
+<link rel="alternate" hreflang="ar" href="/ar/" />
+<link rel="alternate" hreflang="uk" href="/uk/" />
+<link rel="alternate" hreflang="id" href="/id/" />
+<link rel="alternate" hreflang="km" href="/km/" />
+<link rel="alternate" hreflang="th" href="/th/" />
+<link rel="alternate" hreflang="fil" href="/fil/" />
+<link rel="alternate" hreflang="hi" href="/hi/" />
+<link rel="alternate" hreflang="tr" href="/tr/" />
+<link rel="alternate" hreflang="he" href="/he/" />
+<link rel="alternate" hreflang="bn" href="/bn/" />
+<link rel="alternate" hreflang="fa" href="/fa/" />
+<link rel="alternate" hreflang="pl" href="/pl/" />
+<link rel="alternate" hreflang="ne" href="/ne/" />
+<link rel="alternate" hreflang="x-default" href="/en/" />
+</head>
+<body>
+<p style="font-family:system-ui;text-align:center;padding:40px;">Redirecting… <a href="/en/">English</a> · <a href="/ko/">한국어</a></p>
+</body>
+</html>

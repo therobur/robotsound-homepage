@@ -1,0 +1,2162 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>RobotSound.ai — 뮤직 레이블, 음악가의 손에서</title>
+<meta name="description" content="독립 AI 뮤직 레이블. 한 음악가의 감각 안에서 700억 파라미터는 단 하나의 결정이 됩니다." />
+<link rel="alternate" hreflang="ko" href="/ko/" />
+<link rel="alternate" hreflang="en" href="/en/" />
+<link rel="alternate" hreflang="ja" href="/ja/" />
+<link rel="alternate" hreflang="zh-TW" href="/zh-tw/" />
+<link rel="alternate" hreflang="es-MX" href="/es/" />
+<link rel="alternate" hreflang="pt-BR" href="/pt-br/" />
+<link rel="alternate" hreflang="fr" href="/fr/" />
+<link rel="alternate" hreflang="de" href="/de/" />
+<link rel="alternate" hreflang="it" href="/it/" />
+<link rel="alternate" hreflang="ru" href="/ru/" />
+<link rel="alternate" hreflang="ms" href="/ms/" />
+<link rel="alternate" hreflang="mn" href="/mn/" />
+<link rel="alternate" hreflang="my" href="/my/" />
+<link rel="alternate" hreflang="vi" href="/vi/" />
+<link rel="alternate" hreflang="ar" href="/ar/" />
+<link rel="alternate" hreflang="uk" href="/uk/" />
+<link rel="alternate" hreflang="id" href="/id/" />
+<link rel="alternate" hreflang="km" href="/km/" />
+<link rel="alternate" hreflang="th" href="/th/" />
+<link rel="alternate" hreflang="fil" href="/fil/" />
+<link rel="alternate" hreflang="hi" href="/hi/" />
+<link rel="alternate" hreflang="tr" href="/tr/" />
+<link rel="alternate" hreflang="he" href="/he/" />
+<link rel="alternate" hreflang="bn" href="/bn/" />
+<link rel="alternate" hreflang="fa" href="/fa/" />
+<link rel="alternate" hreflang="pl" href="/pl/" />
+<link rel="alternate" hreflang="ne" href="/ne/" />
+<link rel="alternate" hreflang="x-default" href="/en/" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
+<style>
+  :root {
+    /* —— Original cyber palette —— */
+    --bg:         #07060C;
+    --surface:    #0D0C14;
+    --surface-2:  #14131D;
+    --line:       rgba(255,255,255,0.06);
+    --stone:      rgba(255,255,255,0.4);
+    --graphite:   rgba(255,255,255,0.6);
+    --ink:        #FFFFFF;
+    --paper:      #FFFFFF;
+
+    --green:      #00E676;
+    --cyan:       #00E5FF;
+    --blue:       #448AFF;
+    --pink:       #FF4081;
+    --orange:     #FF9100;
+
+    /* legacy clay tokens now mapped to neon green */
+    --clay:       #00E676;
+    --clay-deep:  #00C865;
+    --ember:      #00E5FF;
+    --sand:       #B4B4C8;
+
+    --serif:  "Instrument Serif", "Tiempos Headline", "Times New Roman", serif;
+    --sans:   "Geist", "Söhne", system-ui, sans-serif;
+    --mono:   "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+    --kr:     "Pretendard Variable", "Pretendard", system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans), var(--kr);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection { background: var(--green); color: var(--bg); }
+  a { color: inherit; text-decoration: none; }
+
+  canvas#bgC {
+    position: fixed; inset: 0;
+    width: 100%; height: 100%;
+    z-index: 0; pointer-events: none;
+  }
+  .page { position: relative; z-index: 2; }
+  .page a, .page button, .page .clickable { pointer-events: all; }
+
+  /* ────── NAV ────── */
+  nav.top {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 18px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(14,12,10,0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav.top .mark {
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    display: inline-flex; align-items: center;
+  }
+  nav.top .mark .dot { color: var(--clay); margin: 0 1px; }
+  nav.top .mark .ai { color: var(--stone); font-weight: 400; }
+
+  nav.top .right {
+    display: flex; align-items: center; gap: 24px;
+  }
+  nav.top .right .meta {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  nav.top .right .meta b { color: var(--clay); font-weight: 500; }
+
+  /* ────── shared ────── */
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 0 64px; }
+
+  .kicker {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--clay);
+    display: inline-flex; align-items: center; gap: 12px;
+  }
+  .kicker::before {
+    content: ""; display: inline-block;
+    width: 24px; height: 1px; background: var(--clay);
+  }
+
+  /* ────── HERO ────── */
+  section.hero {
+    min-height: 100vh;
+    padding: 200px 0 80px;
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative;
+  }
+  .hero .topmeta {
+    display: flex; align-items: baseline; gap: 18px;
+    margin-bottom: 56px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  .hero .topmeta .dim { color: var(--line); }
+  .hero .topmeta .now {
+    color: var(--clay);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .hero .topmeta .now::before {
+    content: "●"; font-size: 8px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(40px, 9.6vw, 156px);
+    line-height: 0.94;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    max-width: 1200px;
+    text-wrap: balance;
+  }
+  .hero h1 .it { font-style: normal; color: var(--clay); }
+  .hero h1 .ai-word { font-style: normal; color: var(--clay); }
+
+  .hero .sub-kr {
+    margin-top: 56px;
+    display: block;
+    border-top: 1px solid var(--line);
+    padding-top: 32px;
+  }
+  .hero .sub-kr .desc {
+    font-family: var(--kr);
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--graphite);
+    max-width: 920px;
+    padding-bottom: 6px;
+  }
+
+  /* hero foot stats */
+  .hero .stats {
+    margin-top: 88px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--line);
+    padding-top: 32px;
+  }
+  .hero .stat {
+    padding-right: 32px;
+    border-right: 1px solid var(--line);
+  }
+  .hero .stat:last-child { border-right: 0; }
+  .hero .stat .v {
+    font-family: var(--serif);
+    font-style: normal;
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+  }
+  .hero .stat .v .clay { color: var(--clay); }
+  .hero .stat .l {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stone);
+    margin-top: 14px;
+  }
+  .hero .stat .kr {
+    font-family: var(--kr);
+    font-size: 13px;
+    color: var(--graphite);
+    margin-top: 4px;
+    letter-spacing: -0.005em;
+  }
+
+  /* ────── section base ────── */
+  section.bk {
+    padding: 160px 0;
+    border-top: 1px solid var(--line);
+    position: relative;
+  }
+  .bk .head {
+    display: grid;
+    grid-template-columns: 1fr 1.8fr;
+    gap: 80px;
+    margin-bottom: 96px;
+    align-items: start;
+  }
+  .bk .head .num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--stone);
+    margin-bottom: 14px;
+  }
+  .bk .head .cat {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-style: normal;
+    font-size: 24px;
+    color: var(--clay);
+    letter-spacing: -0.01em;
+  }
+  .bk .head h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 64px;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  .bk .head h2 .it { font-style: normal; color: var(--clay); }
+  .bk .head .lead {
+    font-family: var(--kr);
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--graphite);
+    margin-top: 24px;
+    max-width: 640px;
+  }
+
+  /* ────── 02 TRADITIONAL PIPELINE ────── */
+  .trad {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .trad .node {
+    padding: 48px 32px;
+    border-right: 1px solid var(--line);
+    position: relative;
+  }
+  .trad .node:last-child { border-right: 0; }
+  .trad .node .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    color: var(--stone);
+    margin-bottom: 18px;
+  }
+  .trad .node .role {
+    font-family: var(--serif);
+    font-style: normal;
+    font-size: 32px;
+    line-height: 1;
+    color: var(--ink);
+    margin-bottom: 14px;
+    letter-spacing: -0.02em;
+  }
+  .trad .node .kr {
+    font-family: var(--kr);
+    font-size: 14px;
+    color: var(--graphite);
+    letter-spacing: -0.005em;
+  }
+  .trad .node .arrow {
+    position: absolute;
+    right: -7px; top: 50%;
+    transform: translateY(-50%);
+    width: 14px; height: 14px;
+    background: var(--bg);
+    color: var(--clay);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    z-index: 2;
+  }
+  .trad .node:last-child .arrow { display: none; }
+
+  /* ────── DIVIDER ────── */
+  .divider {
+    padding: 160px 0;
+    text-align: center;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .divider::before, .divider::after {
+    content: "";
+    position: absolute;
+    left: 50%; transform: translateX(-50%);
+    width: 1px; height: 48px;
+    background: var(--line);
+  }
+  .divider::before { top: 0; }
+  .divider::after { bottom: 0; }
+  .divider .quote {
+    font-family: var(--serif);
+    font-style: normal;
+    font-weight: 400;
+    font-size: clamp(36px, 4.4vw, 64px);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: var(--graphite);
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .divider .quote .turn { color: var(--clay); }
+  .divider .meta {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--stone);
+    margin-bottom: 40px;
+  }
+
+  /* ────── 04 SYSTEMS ────── */
+  .sys-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+  .sys-card {
+    background: transparent;
+    padding: 40px 36px 48px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    transition: background 320ms cubic-bezier(.22,1,.36,1);
+  }
+  .sys-card:hover { background: var(--surface); }
+  .sys-card::before {
+    content: "";
+    position: absolute;
+    top: -1px; left: 0;
+    height: 2px; width: 0;
+    background: var(--clay);
+    transition: width 360ms cubic-bezier(.22,1,.36,1);
+  }
+  .sys-card:hover::before { width: 100%; }
+  .sys-card .idx {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.24em;
+    color: var(--stone);
+    margin-bottom: 28px;
+  }
+  .sys-card .name {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .sys-card .full {
+    font-family: var(--serif);
+    font-style: normal;
+    font-size: 17px;
+    color: var(--clay);
+    letter-spacing: -0.005em;
+    margin-bottom: 22px;
+    line-height: 1.3;
+  }
+  .sys-card .desc {
+    font-family: var(--kr);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--graphite);
+    letter-spacing: -0.005em;
+    margin-bottom: 28px;
+    min-height: 72px;
+  }
+  .sys-card .tag {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--clay);
+    padding-top: 14px;
+    border-top: 1px dashed var(--line);
+  }
+  .sys-grid .span-1 { grid-column: span 1; }
+  .sys-grid .span-end {
+    grid-column: span 4;
+    background: var(--surface);
+    padding: 40px 36px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 32px;
+    align-items: center;
+  }
+  .span-end .l { font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--stone); }
+  .span-end .mid { font-family: var(--serif); font-style: normal; font-size: 26px; color: var(--ink); letter-spacing: -0.015em; line-height: 1.45; }
+  .span-end .mid em { color: var(--clay); font-style: normal; font-weight: 500; }
+  .span-end .r {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--clay); text-align: right;
+  }
+
+  /* ────── 05 LLM ────── */
+  .llm-row {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 64px;
+    margin-top: 32px;
+  }
+  .llm-info {
+    padding-right: 24px;
+  }
+  .llm-info .k {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--stone);
+    margin-bottom: 10px;
+  }
+  .llm-info .v {
+    font-family: var(--kr);
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--graphite);
+    margin-bottom: 36px;
+    letter-spacing: -0.005em;
+  }
+  .llm-info .v strong { color: var(--ink); font-weight: 500; }
+  .llm-info .v em {
+    font-family: var(--serif); font-style: normal; color: var(--clay); font-weight: 400;
+  }
+
+  .llm-stage {
+    position: relative;
+    aspect-ratio: 4/3;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .llm-stage canvas {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+  }
+  .llm-hud {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    pointer-events: none;
+    z-index: 3;
+  }
+  .llm-hud .ver {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--clay);
+    margin-bottom: 22px;
+    opacity: 0.85;
+  }
+  .llm-hud .num {
+    font-family: var(--serif);
+    font-style: normal;
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -0.04em;
+  }
+  .llm-hud .num .clay { color: var(--clay); font-style: normal; }
+  .llm-hud .sub {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--stone);
+    margin-top: 18px;
+  }
+  .llm-hud .scale {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--graphite);
+    margin-top: 8px;
+    opacity: 0.6;
+  }
+  .llm-bar-w {
+    width: 200px; height: 1px;
+    background: var(--line);
+    margin: 24px auto 0;
+    overflow: hidden;
+  }
+  .llm-bar-f {
+    height: 100%; width: 0%;
+    background: var(--clay);
+    transition: width 80ms linear;
+  }
+  .llm-stage .corner {
+    position: absolute;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stone);
+    z-index: 4;
+  }
+  .corner.tl { top: 16px; left: 18px; }
+  .corner.tr { top: 16px; right: 18px; color: var(--clay); }
+  .corner.bl { bottom: 16px; left: 18px; }
+  .corner.br { bottom: 16px; right: 18px; }
+
+  /* ────── 06 CHANNELS ────── */
+  .ch-wrap {
+    position: relative;
+    aspect-ratio: 21/10;
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    margin-bottom: 64px;
+  }
+  .ch-wrap canvas {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    display: block;
+  }
+  .ch-corner {
+    position: absolute;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stone);
+    z-index: 4;
+  }
+  .ch-corner.tl { top: 18px; left: 22px; }
+  .ch-corner.tr { top: 18px; right: 22px; color: var(--clay); }
+  .ch-corner.bl { bottom: 18px; left: 22px; }
+  .ch-corner.br { bottom: 18px; right: 22px; }
+  .ch-label {
+    position: absolute;
+    transform: translate(-50%,-50%);
+    z-index: 3;
+    pointer-events: none;
+    text-align: left;
+    background: rgba(14,12,10,0.5);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid var(--line);
+    padding: 10px 14px;
+    border-radius: 4px;
+  }
+  .ch-label .lk {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--clay);
+    margin-bottom: 4px;
+  }
+  .ch-label .lv {
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: -0.005em;
+    color: var(--graphite);
+  }
+  .ch-hud {
+    position: absolute;
+    bottom: 32px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    display: flex; align-items: center; gap: 32px;
+    background: rgba(14,12,10,0.75);
+    border: 1px solid var(--line);
+    padding: 16px 28px;
+    border-radius: 4px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .hud-stat { text-align: center; }
+  .hud-v {
+    font-family: var(--serif);
+    font-style: normal;
+    font-size: 40px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  .hud-v .clay { color: var(--clay); }
+  .hud-v .hud-plus { font-size: 0.5em; color: var(--stone); vertical-align: 0.55em; margin-left: 2px; }
+  .hud-l {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--stone);
+    margin-top: 6px;
+  }
+  .hud-sep { width: 1px; height: 36px; background: var(--line); }
+
+  .ch-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+    margin-bottom: 56px;
+  }
+  .ch-col {
+    padding: 28px 28px 32px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .ch-col .ck, .ch-col .cv span { transition: color 220ms; }
+  .ch-col .ck, .ck {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--clay);
+    margin-bottom: 14px;
+  }
+  .ch-col .cv {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    line-height: 2;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+  .ch-col .cv span:not(.dim) { color: var(--ink); }
+  .ch-col .cv .dim {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--stone);
+  }
+
+  .ag-strip {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 40px 0;
+    display: grid;
+    grid-template-columns: 1fr 2.4fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .ag-lead .ag-quote {
+    font-family: var(--serif);
+    font-size: 22px;
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    color: var(--graphite);
+    margin-top: 4px;
+  }
+  .ag-lead .ag-quote em { font-style: normal; color: var(--clay); }
+  .ag-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+  .ag {
+    padding: 16px 18px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+    transition: background 220ms, color 220ms;
+  }
+  .ag:hover { background: var(--surface); }
+  .ag .ai {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    color: var(--clay);
+  }
+  .ag .an {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--ink);
+  }
+
+  /* ────── CTA ────── */
+  .cta {
+    padding: 200px 0;
+    text-align: center;
+    border-top: 1px solid var(--line);
+    position: relative;
+  }
+  .cta .kicker {
+    margin: 0 auto 48px;
+    justify-content: center;
+  }
+  .cta .kicker::before {
+    background: var(--clay);
+  }
+  .cta h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(56px, 7.5vw, 112px);
+    line-height: 0.96;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+    max-width: 1200px;
+    margin: 0 auto 64px;
+    text-wrap: balance;
+  }
+  .cta h2 .it { font-style: normal; color: var(--clay); }
+
+  .cta .ctas {
+    display: inline-flex;
+    gap: 12px;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 18px 32px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    border-radius: 999px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--bg);
+    cursor: pointer;
+    transition: background 240ms cubic-bezier(.22,1,.36,1), color 240ms;
+  }
+  .btn .arr { transition: transform 240ms cubic-bezier(.22,1,.36,1); }
+  .btn:hover { background: var(--clay); border-color: var(--clay); color: var(--bg); }
+  .btn:hover .arr { transform: translateX(4px); }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.ghost:hover { background: var(--ink); color: var(--bg); }
+
+  /* ────── FOOTER ────── */
+  footer.colophon {
+    border-top: 1px solid var(--line);
+    padding: 80px 0 64px;
+  }
+  footer.colophon .row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    padding-bottom: 64px;
+    border-bottom: 1px solid var(--line);
+  }
+  footer.colophon .col-name {
+    font-family: var(--sans);
+    font-weight: 500;
+    font-style: normal;
+    font-size: 32px;
+    line-height: 1;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+  }
+  footer.colophon .col-name .dot { color: var(--clay); font-style: normal; }
+  footer.colophon .col-name .ai {
+    font-family: var(--sans);
+    font-style: normal;
+    color: var(--stone);
+    font-size: 0.65em;
+    vertical-align: 0.18em;
+    margin-left: 2px;
+    font-weight: 400;
+  }
+  footer.colophon .col {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--stone);
+    line-height: 1.9;
+  }
+  footer.colophon .col b { color: var(--ink); font-weight: 500; }
+  footer.colophon .col a:hover { color: var(--clay); }
+  footer.colophon .end {
+    padding-top: 28px;
+    display: flex; align-items: baseline; justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  footer.colophon .end .center {
+    font-family: var(--serif);
+    font-style: normal;
+    color: var(--clay);
+    letter-spacing: -0.005em;
+    text-transform: none;
+    font-size: 15px;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.3; }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 1s cubic-bezier(.16,1,.3,1), transform 1s cubic-bezier(.16,1,.3,1); }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* ────── TOAST (mailto fallback feedback) ────── */
+  .toast {
+    position: fixed;
+    bottom: 32px; left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: var(--ink);
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 12px 22px;
+    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 280ms cubic-bezier(.22,1,.36,1), transform 280ms cubic-bezier(.22,1,.36,1);
+    z-index: 9999;
+    white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  @media (max-width: 480px) {
+    .toast { font-size: 10.5px; padding: 10px 16px; white-space: normal; max-width: calc(100% - 40px); text-align: center; }
+  }
+
+
+  /* ────── LANG SWITCHER ────── */
+  .lang-switch {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px;
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    max-width: 600px; justify-content: center;
+  }
+  .lang-switch a { color: var(--stone); padding: 3px 3px; transition: color 220ms; white-space: nowrap; }
+  .lang-switch a:hover { color: var(--ink); }
+  .lang-switch a.active { color: var(--clay); }
+  .lang-switch .sep { color: var(--line); }
+  @media (max-width: 1024px) {
+    .lang-switch { max-width: 100%; font-size: 9.5px; }
+  }
+  @media (max-width: 767px) {
+    nav.top { flex-wrap: wrap; }
+    .lang-switch { order: 3; flex-basis: 100%; padding-top: 8px; border-top: 1px solid var(--line); margin-top: 8px; gap: 1px 4px; font-size: 9px; letter-spacing: 0.08em; }
+    .lang-switch a { padding: 2px 2px; }
+  }
+  /* RTL adjustments */
+  html[dir="rtl"] { direction: rtl; }
+  html[dir="rtl"] body { text-align: right; }
+  html[dir="rtl"] .hero, html[dir="rtl"] .wrap, html[dir="rtl"] .sub-kr .desc { text-align: right; }
+  html[dir="rtl"] .trad .arrow { transform: rotate(180deg); }
+  html[dir="rtl"] .sys-card .idx, html[dir="rtl"] .ch-corner.tl, html[dir="rtl"] .ch-corner.bl { right: 22px; left: auto; }
+  html[dir="rtl"] .ch-corner.tr, html[dir="rtl"] .ch-corner.br { left: 22px; right: auto; }
+
+  /* ────── responsive — desktop-first, 3-tier ────── */
+
+  /* TABLET — 768 ~ 1024 */
+  @media (max-width: 1024px) {
+    nav.top { padding: 14px 20px; }
+    .wrap { padding: 0 28px; }
+    .bk { padding: 120px 0; }
+    .bk .head, .hero .sub-kr, .llm-row { grid-template-columns: 1fr; gap: 28px; }
+    .sys-grid { grid-template-columns: repeat(2, 1fr); }
+    .sys-grid .span-end { grid-column: span 2; }
+    .trad { grid-template-columns: 1fr; }
+    .trad .node { border-right: 0; border-bottom: 1px solid var(--line); }
+    .trad .node .arrow { display: none; }
+    .hero .stats { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .hero .stat:nth-child(2n) { border-right: 0; }
+    .ch-grid { grid-template-columns: repeat(2, 1fr); }
+    .ag-strip { grid-template-columns: 1fr; gap: 24px; }
+    .ag-grid { grid-template-columns: repeat(3, 1fr); }
+    footer.colophon .row { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+  }
+
+  /* MOBILE — ≤ 767 */
+  @media (max-width: 767px) {
+    .wrap { padding: 0 20px; }
+    nav.top { padding: 12px 16px; }
+    nav.top .mark { font-size: 14px; }
+    nav.top .meta { font-size: 10.5px; }
+
+    /* Hero */
+    .hero { padding-top: 96px; padding-bottom: 60px; }
+    .hero h1 { letter-spacing: -0.03em; }
+    .hero .topmeta { flex-wrap: wrap; gap: 6px 10px; font-size: 10.5px; }
+    .hero .sub-kr { margin-top: 40px; padding-top: 24px; }
+    .hero .sub-kr .desc { font-size: 14.5px; line-height: 1.75; max-width: 100%; }
+    .hero .sub-kr .desc br { display: none; }
+    .hero .stats { margin-top: 48px; gap: 12px; }
+    .hero .stat { padding: 22px 16px; }
+    .hero .stat .v { font-size: 44px; }
+    .hero .stat .l { font-size: 10.5px; }
+    .hero .stat .kr { font-size: 10.5px; }
+
+    /* §02 Foundation + headings */
+    .bk { padding: 80px 0; }
+    .bk .head { margin-bottom: 64px; }
+    .bk .head h2 { font-size: clamp(34px, 8.5vw, 52px); line-height: 1.05; }
+    .bk .head .lead { font-size: 15px; line-height: 1.7; margin-top: 20px; }
+
+    /* Turning Point */
+    .divider { padding: 96px 0; }
+    .divider .quote { font-size: clamp(22px, 5.6vw, 36px); padding: 0 12px; }
+
+    /* §04 Systems */
+    .sys-grid { grid-template-columns: 1fr; }
+    .sys-card { padding: 28px 24px; }
+    .sys-grid .span-end {
+      grid-column: span 1;
+      grid-template-columns: 1fr;
+      text-align: center;
+      padding: 32px 24px;
+      gap: 14px;
+    }
+    .span-end .l, .span-end .r { text-align: center; }
+    .span-end .mid { font-size: 21px; line-height: 1.4; }
+
+    /* §05 Brain — override desktop typographic adjustments */
+    #llm .lead { margin-left: 0 !important; max-width: 100% !important; font-size: 15px !important; }
+    .llm-row { gap: 32px; margin-top: 24px; }
+    .llm-stage { min-height: 380px; }
+
+    /* §06 Channels */
+    .ch-wrap { min-height: 460px; }
+    .ch-label { display: none; }
+    .ch-corner { font-size: 8px; letter-spacing: 0.16em; }
+    .ch-hud {
+      gap: 14px;
+      bottom: 20px;
+      padding: 10px 16px;
+      max-width: calc(100% - 32px);
+    }
+    .hud-v { font-size: 24px; }
+    .hud-l { font-size: 8.5px; letter-spacing: 0.16em; }
+    .ch-grid { grid-template-columns: 1fr; }
+    .ch-col { padding: 24px 20px; }
+    .ag-grid { grid-template-columns: repeat(2, 1fr); }
+    .ag { padding: 14px 16px; }
+    /* §06 h2: override inline white-space:nowrap so long lines can wrap on narrow screens */
+    #channels h2 { white-space: normal !important; }
+
+    /* CTA */
+    .cta { padding: 120px 0; }
+    .cta h2 { font-size: clamp(36px, 9vw, 60px); margin-bottom: 40px; }
+    .cta .kicker { margin-bottom: 36px; }
+
+    /* Footer */
+    footer.colophon { padding: 60px 0 36px; }
+    footer.colophon .row { grid-template-columns: 1fr; gap: 28px; }
+    footer.colophon .end { flex-direction: column; gap: 10px; text-align: center; }
+    footer.colophon .end .center { order: -1; }
+  }
+
+  /* SMALL MOBILE — ≤ 480 */
+  @media (max-width: 480px) {
+    .hero .stats { grid-template-columns: 1fr; gap: 0; }
+    .hero .stat { border-right: 0 !important; border-bottom: 1px solid var(--line); }
+    .hero .stat:last-child { border-bottom: 0; }
+    .ag-grid { grid-template-columns: repeat(2, 1fr); }
+    .ch-wrap { min-height: 360px; }
+    .ch-hud { padding: 8px 12px; gap: 10px; max-width: calc(100% - 24px); }
+    .hud-v { font-size: 20px; }
+    .hud-l { font-size: 8px; }
+  }
+</style>
+</head>
+<body data-screen-label="Homepage">
+
+<canvas id="bgC"></canvas>
+
+<div class="page">
+
+  <!-- ──── TOP NAV ──── -->
+  <nav class="top">
+    <div class="mark">RobotSound<span class="dot">.</span><span class="ai">ai</span></div>
+    <div class="lang-switch"><a href="/ko/" class="active">KO</a><span class="sep">·</span><a href="/en/">EN</a><span class="sep">·</span><a href="/ja/">JA</a><span class="sep">·</span><a href="/zh-tw/">中</a><span class="sep">·</span><a href="/es/">ES</a><span class="sep">·</span><a href="/pt-br/">PT</a><span class="sep">·</span><a href="/fr/">FR</a><span class="sep">·</span><a href="/de/">DE</a><span class="sep">·</span><a href="/it/">IT</a><span class="sep">·</span><a href="/ru/">RU</a><span class="sep">·</span><a href="/ms/">MS</a><span class="sep">·</span><a href="/mn/">MN</a><span class="sep">·</span><a href="/my/">MY</a><span class="sep">·</span><a href="/vi/">VI</a><span class="sep">·</span><a href="/ar/">AR</a><span class="sep">·</span><a href="/uk/">UK</a><span class="sep">·</span><a href="/id/">ID</a><span class="sep">·</span><a href="/km/">KM</a><span class="sep">·</span><a href="/th/">TH</a><span class="sep">·</span><a href="/fil/">FIL</a><span class="sep">·</span><a href="/hi/">HI</a><span class="sep">·</span><a href="/tr/">TR</a><span class="sep">·</span><a href="/he/">HE</a><span class="sep">·</span><a href="/bn/">BN</a><span class="sep">·</span><a href="/fa/">FA</a><span class="sep">·</span><a href="/pl/">PL</a><span class="sep">·</span><a href="/ne/">NE</a></div>
+    <div class="right">
+      <div class="meta"><b>Music</b> Label</div>
+    </div>
+  </nav>
+
+  <!-- ──── HERO ──── -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="topmeta">
+        <span class="now">Music Company, Reimagined by AI</span>
+        <span class="dim">/</span>
+        <span>Issue 06 — In a Musician's Hand</span>
+        <span class="dim">/</span>
+        <span>2026</span>
+      </div>
+
+      <h1>
+        In a <span class="it">musician's</span> hand,<br/>
+        every <span class="ai-word">machine</span> becomes<br/>
+        an <span class="it">instrument</span><span style="color:var(--clay); font-style:normal;">.</span>
+      </h1>
+
+      <div class="sub-kr">
+        <div class="desc">
+          RobotSound는 A&amp;R, 프로듀서, 작곡가, 아티스트로 이어지는 전통적 음악 제작 역량 위에,<br/>
+          여러 AI 모델을 자기만의 고도화된 제작 시스템으로 운용하는 독립 뮤직 레이블입니다.
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="v"><span class="clay">7</span></div>
+          <div class="l">AI Systems</div>
+          <div class="kr">AI 시스템</div>
+        </div>
+        <div class="stat">
+          <div class="v">70B</div>
+          <div class="l">LLM Parameters</div>
+          <div class="kr">LLM 파라미터</div>
+        </div>
+        <div class="stat">
+          <div class="v">660<span style="color:var(--stone); font-size:0.5em; vertical-align: 0.55em;">+</span></div>
+          <div class="l">Platforms</div>
+          <div class="kr">플랫폼</div>
+        </div>
+        <div class="stat">
+          <div class="v">27</div>
+          <div class="l">Languages</div>
+          <div class="kr">언어</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──── 02 — TRADITIONAL ──── -->
+  <section class="bk" id="foundation">
+    <div class="wrap">
+      <div class="head reveal">
+        <div>
+          <div class="num">02 / The Foundation</div>
+          <div class="cat">A music company, first.</div>
+        </div>
+        <div>
+          <h2>전통적 음악 제작의<br/>모든 <span class="it">역량</span>.</h2>
+        </div>
+      </div>
+
+      <div class="trad reveal">
+        <div class="node">
+          <div class="num">01</div>
+          <div class="role"><em>A&amp;R</em></div>
+          <div class="kr">아티스트 발굴 · 기획</div>
+          <span class="arrow">→</span>
+        </div>
+        <div class="node">
+          <div class="num">02</div>
+          <div class="role"><em>Producer</em></div>
+          <div class="kr">프로듀싱 · 디렉션</div>
+          <span class="arrow">→</span>
+        </div>
+        <div class="node">
+          <div class="num">03</div>
+          <div class="role"><em>Songwriter</em></div>
+          <div class="kr">작사 · 톱라인</div>
+          <span class="arrow">→</span>
+        </div>
+        <div class="node">
+          <div class="num">04</div>
+          <div class="role"><em>Composer</em></div>
+          <div class="kr">작곡 · 편곡 · 믹스</div>
+          <span class="arrow">→</span>
+        </div>
+        <div class="node">
+          <div class="num">05</div>
+          <div class="role"><em>Artist</em></div>
+          <div class="kr">퍼포먼스 · 보이스</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──── DIVIDER ──── -->
+  <div class="divider reveal">
+    <div class="wrap">
+      <div class="meta">— The Turning Point —</div>
+      <p class="quote">
+        여기까지는 전통의 길이었습니다.<br/>
+        <span class="turn">여기서부터는, 우리만의 길입니다.</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- ──── 04 — AI SYSTEMS ──── -->
+  <section class="bk" id="systems">
+    <div class="wrap">
+      <div class="head reveal">
+        <div>
+          <div class="num">04 / System Architecture</div>
+          <div class="cat">Seven systems, one orchestra.</div>
+        </div>
+        <div>
+          <h2>7개의 시스템이<br/>한 <span class="it">악기처럼</span> 움직입니다.</h2>
+          <p class="lead">각 시스템은 독립적으로 작동하면서도 서로 데이터를 주고받습니다.<br/>음악 제작·비즈니스·배포·광고까지,<br/>음악 회사가 하는 모든 일이 하나의 파이프라인으로 연결됩니다.</p>
+        </div>
+      </div>
+
+      <div class="sys-grid reveal">
+
+        <div class="sys-card">
+          <div class="idx">— 01</div>
+          <div class="name">MPMS</div>
+          <div class="full">Music Production<br/>Management System</div>
+          <div class="desc">작곡부터 마스터링까지,<br/>Phase 0–8 전 과정을 관리합니다.<br/>음악 제작의 척추.</div>
+          <div class="tag">Core Engine</div>
+        </div>
+
+        <div class="sys-card">
+          <div class="idx">— 02</div>
+          <div class="name">WORKFLOW</div>
+          <div class="full">Business<br/>Operations</div>
+          <div class="desc">아티스트와의<br/>모든 음악 작업이<br/>한 곳에서 진행됩니다.</div>
+          <div class="tag">Business Ops</div>
+        </div>
+
+        <div class="sys-card">
+          <div class="idx">— 03</div>
+          <div class="name">PROMO</div>
+          <div class="full">Content<br/>Strategy</div>
+          <div class="desc">콘텐츠 프로모션 전략을<br/>AI가 수립하고 실행합니다.<br/>타겟 분석부터 최적 타이밍까지.</div>
+          <div class="tag">Marketing AI</div>
+        </div>
+
+        <div class="sys-card">
+          <div class="idx">— 04</div>
+          <div class="name">VIRAL</div>
+          <div class="full">Distribution<br/>Network</div>
+          <div class="desc">27개 언어, 660+ 플랫폼으로 동시 배포.<br/>15-에이전트 시스템이<br/>릴리즈 즉시 전 세계를 동시에 바이럴.</div>
+          <div class="tag">15 Agents · 660+ Platforms</div>
+        </div>
+
+        <div class="sys-card">
+          <div class="idx">— 05</div>
+          <div class="name">AD-ENGINE</div>
+          <div class="full">Ads<br/>Automation</div>
+          <div class="desc">캠페인을 자동 생성하고<br/>실시간으로 최적화합니다.<br/>안정성 메커니즘 내장.</div>
+          <div class="tag">Ads Automation</div>
+        </div>
+
+        <div class="sys-card">
+          <div class="idx">— 06</div>
+          <div class="name">CONNECT</div>
+          <div class="full">Communication<br/>Hub</div>
+          <div class="desc">아티스트, 파트너, 플랫폼을 연결하는<br/>커뮤니케이션 허브.<br/>모든 접점을 하나로 통합.</div>
+          <div class="tag">Communication Hub</div>
+        </div>
+
+        <div class="sys-card">
+          <div class="idx">— 07</div>
+          <div class="name">AI-MV</div>
+          <div class="full">Video<br/>Generation</div>
+          <div class="desc">캐릭터 일관성을 유지하면서<br/>AI 뮤직비디오를 자동 생성하는<br/>자체 영상 파이프라인.</div>
+          <div class="tag">Video Pipeline</div>
+        </div>
+
+        <div class="sys-card">
+          <div class="idx">— 00</div>
+          <div class="name">LLM-CORE</div>
+          <div class="full">The 70B Brain</div>
+          <div class="desc">7개 시스템 중심에 놓인<br/>700억 파라미터 LLM.<br/>시스템이 자가 발전.</div>
+          <div class="tag">→ See section 05</div>
+        </div>
+
+        <div class="span-end">
+          <div class="l">Topology / RS-CORE-2026</div>
+          <div class="mid">— Machines are merely instruments.<br/><em>Music is composed by hand.</em></div>
+          <div class="r">Orchestrated by hand →</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ──── 05 — 70B LLM ──── -->
+  <section class="bk" id="llm">
+    <div class="wrap">
+      <div class="head reveal">
+        <div>
+          <div class="num">05 / The Brain</div>
+          <div class="cat">One touch. Seventy billion possibilities.</div>
+        </div>
+        <div>
+          <h2 style="font-family:var(--serif); font-size:clamp(40px,7vw,108px); line-height:0.95; letter-spacing:-0.035em;">
+            In a musician's <span class="it">touch</span>,<br/>
+            seventy billion parameters<br/>
+            become one <span class="it">decision</span>.
+          </h2>
+          <p class="lead" style="font-family:var(--kr); font-size:18px; max-width:560px; margin-top:32px; margin-left:-6px;">
+            한 음악가의 감각 안에서, 700억 파라미터는 단 하나의 결정이 됩니다.<br/>
+            7개 시스템의 중심에는 자체 운용하는 70B LLM이 있습니다<br/>
+            — 모델은 매일 데이터를 학습하며 판단을 정교하게 만들지만,<br/>
+            마지막 결정은 언제나 사람의 감각에서 완성됩니다.
+          </p>
+        </div>
+      </div>
+
+      <div class="llm-row reveal">
+        <div class="llm-info">
+          <div class="k">— Model</div>
+          <div class="v"><strong>RobotSound LLM v1.07</strong> &nbsp;·&nbsp; 70 billion parameters &nbsp;·&nbsp; <em>self-evolving</em>.<br/>매일 운영 데이터를 학습하며 7개 시스템 전체의 판단을 점점 더 정교하게 만들어갑니다.</div>
+
+          <div class="k">— Role</div>
+          <div class="v">시스템의 두뇌이자 <em>도구</em>. 모델은 후보를 생성하고,<br/>음악가는 그중 무엇을 음악으로 남길지 손으로 결정합니다.</div>
+
+          <div class="k">— Roadmap</div>
+          <div class="v">v1.07 (current) → v2.0 (Q4 2026) → multi-modal expansion (2027).<br/>모델은 음악과 함께 자랍니다.</div>
+        </div>
+
+        <div class="llm-stage">
+          <canvas id="llmCanvas"></canvas>
+          <div class="corner tl">— Robot Sound LLM</div>
+          <div class="corner tr">● Live</div>
+          <div class="corner bl">v1.07 / RS-CORE</div>
+          <div class="corner br">May 2026</div>
+          <div class="llm-hud">
+            <div class="ver">Robot Sound LLM v1.07</div>
+            <div class="num" id="llmNum">0</div>
+            <div class="sub">Parameters</div>
+            <div class="scale" id="llmScale"></div>
+            <div class="llm-bar-w"><div class="llm-bar-f" id="llmBar"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──── 06 — GLOBAL CHANNELS ──── -->
+  <section class="bk" id="channels">
+    <div class="wrap">
+      <div class="head reveal">
+        <div>
+          <div class="num">06 / Global Viral Channels</div>
+          <div class="cat">Every continent, at once.</div>
+        </div>
+        <div>
+          <h2 style="font-size:clamp(40px,5vw,56px); white-space:nowrap;">한 곡이 울리면,<br/>세계가 <span class="it">같은 박자로 깨어난다.</span></h2>
+        </div>
+      </div>
+
+      <!-- channels stage -->
+      <div class="ch-wrap reveal">
+        <canvas id="chCanvas"></canvas>
+
+        <div class="ch-corner tl">— RS-VIRAL / Live Network</div>
+        <div class="ch-corner tr">● 15 agents · online</div>
+        <div class="ch-corner bl">RS-CORE / v1.07</div>
+        <div class="ch-corner br">May 2026</div>
+
+        <!-- stage labels — fixed positions over canvas -->
+        <div class="ch-label" style="top:14%;left:12%">
+          <div class="lk">North America</div>
+          <div class="lv">192 channels · 4 lang</div>
+        </div>
+        <div class="ch-label" style="top:22%;left:62%">
+          <div class="lk">Europe</div>
+          <div class="lv">214 channels · 11 lang</div>
+        </div>
+        <div class="ch-label" style="top:58%;left:8%">
+          <div class="lk">LatAm</div>
+          <div class="lv">86 channels · 3 lang</div>
+        </div>
+        <div class="ch-label" style="top:42%;left:78%">
+          <div class="lk">Asia Pacific</div>
+          <div class="lv">128 channels · 7 lang</div>
+        </div>
+        <div class="ch-label" style="top:74%;left:58%">
+          <div class="lk">MENA + Africa</div>
+          <div class="lv">40 channels · 2 lang</div>
+        </div>
+
+        <!-- central HUD -->
+        <div class="ch-hud">
+          <div class="hud-stat">
+            <div class="hud-v"><span class="clay">660</span><span class="hud-plus">+</span></div>
+            <div class="hud-l">Platforms</div>
+          </div>
+          <div class="hud-sep"></div>
+          <div class="hud-stat">
+            <div class="hud-v"><span class="clay">27</span></div>
+            <div class="hud-l">Languages</div>
+          </div>
+          <div class="hud-sep"></div>
+          <div class="hud-stat">
+            <div class="hud-v"><span class="clay">15</span></div>
+            <div class="hud-l">Agents</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- channels breakdown -->
+      <div class="ch-grid reveal">
+        <div class="ch-col">
+          <div class="ck">— Music</div>
+          <div class="cv">
+            <span>Spotify</span> · <span>Apple Music</span> · <span>YouTube Music</span> · <span>Tidal</span><br/>
+            <span>Amazon Music</span> · <span>Deezer</span> · <span>SoundCloud</span> · <span>Audiomack</span><br/>
+            <span>QQ Music</span> · <span>NetEase</span> · <span>LINE Music</span> · <span>JioSaavn</span><br/>
+            <span class="dim">+ 78 regional partners</span>
+          </div>
+        </div>
+        <div class="ch-col">
+          <div class="ck">— Short-form / Social</div>
+          <div class="cv">
+            <span>TikTok</span> · <span>Instagram Reels</span> · <span>YouTube Shorts</span><br/>
+            <span>X / Twitter</span> · <span>Threads</span> · <span>Bluesky</span><br/>
+            <span>Douyin</span> · <span>Kuaishou</span> · <span>Xiaohongshu</span><br/>
+            <span class="dim">+ 220 short-form &amp; community channels</span>
+          </div>
+        </div>
+        <div class="ch-col">
+          <div class="ck">— Long-form / Video</div>
+          <div class="cv">
+            <span>YouTube</span> · <span>Twitch</span> · <span>Vimeo</span> · <span>Bilibili</span><br/>
+            <span>Dailymotion</span> · <span>Niconico</span> · <span>Rumble</span><br/>
+            <span class="dim">+ 96 video &amp; streaming channels</span>
+          </div>
+        </div>
+        <div class="ch-col">
+          <div class="ck">— Sync / B2B</div>
+          <div class="cv">
+            <span>Music libraries</span> · <span>Sync agencies</span><br/>
+            <span>Brand partnerships</span> · <span>Game studios</span><br/>
+            <span>Film &amp; TV</span> · <span>Ads networks</span><br/>
+            <span class="dim">+ 162 industry catalogs</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 15 agents -->
+      <div class="ag-strip reveal">
+        <div class="ag-lead">
+          <div class="ck">— The Fifteen</div>
+        </div>
+        <div class="ag-grid">
+          <div class="ag"><span class="ai">A·01</span><span class="an">SPOTIFY</span></div>
+          <div class="ag"><span class="ai">A·02</span><span class="an">APPLE</span></div>
+          <div class="ag"><span class="ai">A·03</span><span class="an">YOUTUBE</span></div>
+          <div class="ag"><span class="ai">A·04</span><span class="an">TIKTOK</span></div>
+          <div class="ag"><span class="ai">A·05</span><span class="an">REELS</span></div>
+          <div class="ag"><span class="ai">A·06</span><span class="an">SHORTS</span></div>
+          <div class="ag"><span class="ai">A·07</span><span class="an">CN-SUITE</span></div>
+          <div class="ag"><span class="ai">A·08</span><span class="an">JP-LINE</span></div>
+          <div class="ag"><span class="ai">A·09</span><span class="an">SOUNDCLOUD</span></div>
+          <div class="ag"><span class="ai">A·10</span><span class="an">TWITCH</span></div>
+          <div class="ag"><span class="ai">A·11</span><span class="an">SYNC-LIB</span></div>
+          <div class="ag"><span class="ai">A·12</span><span class="an">ADS-PUSH</span></div>
+          <div class="ag"><span class="ai">A·13</span><span class="an">TRANSLATE</span></div>
+          <div class="ag"><span class="ai">A·14</span><span class="an">METADATA</span></div>
+          <div class="ag"><span class="ai">A·15</span><span class="an">CONDUCTOR</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ──── CTA ──── -->
+  <section class="cta" id="contact">
+    <div class="wrap reveal">
+      <div class="kicker">Contact</div>
+      <h2>
+        어떤 질문이라도,<br/>
+        <span class="it">언제든 들려주세요.</span>
+      </h2>
+      <a id="cta-email" href="mailto:hello@robotsound.ai?subject=RobotSound%20Inquiry" data-addr="hello@robotsound.ai" style="display:inline-block; margin-top:36px; font-family:var(--mono); font-size:14px; letter-spacing:0.15em; text-transform:uppercase; color:var(--clay); text-decoration:none; border-bottom:1px solid var(--clay); padding-bottom:6px;">
+        hello@robotsound.ai →
+      </a>
+    </div>
+  </section>
+
+  <!-- ──── FOOTER ──── -->
+  <footer class="colophon">
+    <div class="wrap">
+      <div class="row">
+        <div class="col-name">RobotSound<span class="dot">.</span><span class="ai">ai</span></div>
+        <div class="col">
+          <b>Studio</b><br/>
+          8F, 301, Seocho-daero<br/>
+          Seocho-gu, Seoul 06606<br/>
+          Republic of Korea
+        </div>
+        <div class="col">
+          <b>Contact</b><br/>
+          <a href="mailto:hello@robotsound.ai">hello@<br/>robotsound.ai</a>
+        </div>
+        <div class="col">
+          <b>Index</b><br/>
+          <a href="#foundation">Foundation</a><br/>
+          <a href="#systems">Systems</a><br/>
+          <a href="#llm">70B Brain</a><br/>
+          <a href="#channels">Channels</a>
+        </div>
+      </div>
+      <div class="end">
+        <div>© 2026 — 주식회사 로봇사운드</div>
+        <div class="center">— in a musician's hand, every machine becomes an instrument.</div>
+        <div>RS-CORE / v1.07</div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- ════════════ scripts ════════════ -->
+<script>
+/* ═══ CTA email — copy-to-clipboard fallback + mailto ═══ */
+(function(){
+  function showToast(msg){
+    var t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2400);
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    var el = document.getElementById('cta-email');
+    if (!el) return;
+    el.addEventListener('click', function(){
+      var addr = el.getAttribute('data-addr') || 'hello@robotsound.ai';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(addr).then(function(){
+          showToast('이메일 주소가 복사되었습니다 · ' + addr);
+        }).catch(function(){});
+      } else {
+        // Older browsers — fallback to execCommand
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = addr; ta.style.position='fixed'; ta.style.opacity='0';
+          document.body.appendChild(ta); ta.select();
+          document.execCommand('copy'); document.body.removeChild(ta);
+          showToast('이메일 주소가 복사되었습니다 · ' + addr);
+        } catch(_) {}
+      }
+      // Don't preventDefault — mailto: still fires if a handler exists
+    });
+  });
+})();
+(function(){
+  // ═══ BACKGROUND CANVAS — cyber particles, amped up ═══
+  var c = document.getElementById('bgC'),
+      ctx = c.getContext('2d'),
+      W, H, scrollP = 0, mx = 0, my = 0, t = 0;
+  var isMob = window.innerWidth < 900;
+
+  function resize(){
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    c.width = W * dpr; c.height = H * dpr;
+    c.style.width = W + 'px'; c.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    mx = W/2; my = H/2;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  window.addEventListener('scroll', function(){
+    scrollP = window.pageYOffset / (document.body.scrollHeight - window.innerHeight || 1);
+  });
+  window.addEventListener('mousemove', function(e){
+    mx = e.clientX; my = e.clientY;
+  });
+
+
+  var PC = isMob ? 600 : 3200;
+  var FOV = 620;
+  var px = [], py = [], pz = [], vx = [], vy = [], vz = [];
+  var pr = [], pg = [], pb = [], psz = [];
+  var tw_speed = [], tw_phase = [], hue_drift = [], breath_off = [];
+  // formations
+  var fS = {x:[], y:[], z:[]},
+      fG = {x:[], y:[], z:[]},
+      fH = {x:[], y:[], z:[]},
+      fW = {x:[], y:[], z:[]},
+      fE = {x:[], y:[], z:[]};
+
+  // cyber palette
+  var cols = [
+    [  0, 230, 118],
+    [  0, 229, 255],
+    [ 68, 138, 255],
+    [255,  64, 129],
+    [255, 145,   0],
+    [200, 200, 220]
+  ];
+
+  for (var i = 0; i < PC; i++){
+    var th = Math.random() * Math.PI * 2;
+    var ph = Math.acos(2 * Math.random() - 1);
+    var rRand = Math.pow(Math.random(), 0.55);
+    var r = 220 + rRand * 1000;
+    px[i] = r * Math.sin(ph) * Math.cos(th);
+    py[i] = r * Math.sin(ph) * Math.sin(th);
+    pz[i] = r * Math.cos(ph);
+    vx[i] = (Math.random() - 0.5) * 0.4;
+    vy[i] = (Math.random() - 0.5) * 0.4;
+    vz[i] = (Math.random() - 0.5) * 0.4;
+
+    var cc = cols[Math.floor(Math.random() * cols.length)];
+    pr[i] = cc[0]; pg[i] = cc[1]; pb[i] = cc[2];
+    psz[i] = Math.pow(Math.random(), 1.7) * 3.0 + 0.4;
+    tw_speed[i] = 0.6 + Math.random() * 2.4;
+    tw_phase[i] = Math.random() * Math.PI * 2;
+    hue_drift[i] = (Math.random() - 0.5) * 0.6;
+    breath_off[i] = Math.random() * Math.PI * 2;
+
+    // S — wide galactic disk
+    var nebR  = Math.pow(Math.random(), 0.5) * 980 + 200;
+    var diskT = Math.random() * Math.PI * 2;
+    fS.x[i] = Math.cos(diskT) * nebR;
+    fS.y[i] = Math.sin(diskT) * nebR * 0.55;
+    fS.z[i] = (Math.random() - 0.5) * 340;
+
+    // G — grid
+    var gs = Math.ceil(Math.pow(PC, 1/3));
+    fG.x[i] = ((i % gs) - gs/2) * 80;
+    fG.y[i] = ((Math.floor(i / gs) % gs) - gs/2) * 80;
+    fG.z[i] = (Math.floor(i / (gs * gs)) - gs/2) * 80;
+
+    // H — helix
+    var ht = i / PC * Math.PI * 10;
+    fH.x[i] = Math.cos(ht) * 360 + (Math.random() - 0.5) * 90;
+    fH.y[i] = (i / PC - 0.5) * 1500;
+    fH.z[i] = Math.sin(ht) * 360 + (Math.random() - 0.5) * 90;
+
+    // W — wave
+    var wt = i / PC;
+    fW.x[i] = (wt - 0.5) * 2000;
+    fW.y[i] = Math.sin(wt * Math.PI * 8) * 220 + (Math.random() - 0.5) * 120;
+    fW.z[i] = Math.cos(wt * Math.PI * 5) * 180 + (Math.random() - 0.5) * 120;
+
+    // E — expanded shell
+    var er = 700 + Math.random() * 700;
+    fE.x[i] = er * Math.sin(ph) * Math.cos(th);
+    fE.y[i] = er * Math.sin(ph) * Math.sin(th);
+    fE.z[i] = er * Math.cos(ph);
+  }
+
+  function getTgt(){
+    if (scrollP < 0.12) return fS;
+    if (scrollP < 0.32) return fG;
+    if (scrollP < 0.52) return fH;
+    if (scrollP < 0.72) return fW;
+    return fE;
+  }
+
+  // floating code fragments — give the cyber feel
+  var codeFrags = ['MPMS.run()','WORKFLOW.sync()','PROMO.execute()','VIRAL.distribute()',
+    'AD-ENGINE.optimize()','CONNECT.link()','AI-MV.render()','LLM.evolve()',
+    'critic.evaluate()','tune()','agent[01..15]','660+platforms','27lang',
+    'render()','♪','♫','♩','♬','70B','Phase:OK'];
+  var flows = [];
+  var fN = isMob ? 18 : 56;
+  for (var fi = 0; fi < fN; fi++){
+    flows.push({
+      x: Math.random() * 3200 - 600,
+      y: Math.random() * 2200,
+      sp: 0.3 + Math.random() * 0.9,
+      txt: codeFrags[Math.floor(Math.random() * codeFrags.length)],
+      op: Math.random() * 0.07 + 0.02,
+      sz: isMob ? 8 : 10 + Math.random() * 4
+    });
+  }
+
+  // click ripples + particle burst
+  var ripples = [];
+  window.addEventListener('click', function(e){
+    if (e.target.closest('a, button, .clickable')) return;
+    ripples.push({ x: e.clientX, y: e.clientY, r: 0, a: 0.6 });
+    var bx = (e.clientX / W - 0.5) * 700;
+    var by = -(e.clientY / H - 0.5) * 460;
+    for (var bi = 0; bi < PC; bi++){
+      var dx = px[bi] - bx, dy = py[bi] - by;
+      var dd = Math.sqrt(dx*dx + dy*dy);
+      if (dd < 220){
+        var ff = (220 - dd) / 220 * 4.4;
+        vx[bi] += (dx / dd) * ff;
+        vy[bi] += (dy / dd) * ff;
+        vz[bi] += (Math.random() - 0.5) * ff;
+      }
+    }
+  });
+
+  function draw(){
+    t += 0.016;
+    // trail (light fog) — slightly more crisp
+    ctx.fillStyle = 'rgba(7,6,12,0.22)';
+    ctx.fillRect(0, 0, W, H);
+
+    // — soft aurora beams (slow diagonal light)
+    var b1y = H * (0.18 + Math.sin(t * 0.045) * 0.04);
+    var b2y = H * (0.65 + Math.cos(t * 0.038) * 0.05);
+    var ag1 = ctx.createLinearGradient(0, b1y - 220, 0, b1y + 220);
+    ag1.addColorStop(0, 'rgba(0,230,118,0)');
+    ag1.addColorStop(0.5, 'rgba(0,230,118,0.018)');
+    ag1.addColorStop(1, 'rgba(0,230,118,0)');
+    ctx.fillStyle = ag1;
+    ctx.fillRect(0, b1y - 220, W, 440);
+
+    var ag2 = ctx.createLinearGradient(0, b2y - 260, 0, b2y + 260);
+    ag2.addColorStop(0, 'rgba(0,229,255,0)');
+    ag2.addColorStop(0.5, 'rgba(0,229,255,0.015)');
+    ag2.addColorStop(1, 'rgba(0,229,255,0)');
+    ctx.fillStyle = ag2;
+    ctx.fillRect(0, b2y - 260, W, 520);
+
+    // — drifting nebula cloud (very soft, gives depth)
+    var nx1 = W * (0.32 + Math.sin(t * 0.04) * 0.08);
+    var ny1 = H * (0.36 + Math.cos(t * 0.03) * 0.06) - scrollP * 180;
+    var ng1 = ctx.createRadialGradient(nx1, ny1, 0, nx1, ny1, Math.max(W, H) * 0.55);
+    ng1.addColorStop(0,   'rgba(68,138,255,0.025)');
+    ng1.addColorStop(0.4, 'rgba(68,138,255,0.008)');
+    ng1.addColorStop(1,   'rgba(68,138,255,0)');
+    ctx.fillStyle = ng1;
+    ctx.fillRect(0, 0, W, H);
+
+    var nx2 = W * (0.72 + Math.cos(t * 0.035) * 0.06);
+    var ny2 = H * (0.58 + Math.sin(t * 0.028) * 0.05) - scrollP * 220;
+    var ng2 = ctx.createRadialGradient(nx2, ny2, 0, nx2, ny2, Math.max(W, H) * 0.5);
+    ng2.addColorStop(0,   'rgba(255,64,129,0.018)');
+    ng2.addColorStop(0.5, 'rgba(255,64,129,0.006)');
+    ng2.addColorStop(1,   'rgba(255,64,129,0)');
+    ctx.fillStyle = ng2;
+    ctx.fillRect(0, 0, W, H);
+
+
+    var camX = (mx / W - 0.5) * 80;
+    var camY = -(my / H - 0.5) * 50 - scrollP * 130;
+    var camZ = 820 - scrollP * 200;
+    var rotY = t * 0.006 + scrollP * 0.30;
+    var tgt = getTgt();
+    // global breath — slow heartbeat that pulses through the whole field
+    var breath = 0.5 + Math.sin(t * 0.6) * 0.5;                  // 0..1 slow
+    var heartbeat = Math.pow(Math.max(0, Math.sin(t * 0.85)), 6); // sharp spike every ~7s
+    
+    var sorted = [];
+
+    for (var i = 0; i < PC; i++){
+      px[i] += (tgt.x[i] - px[i]) * 0.008 + Math.sin(t * 0.3 + i * 0.13) * 0.15;
+      py[i] += (tgt.y[i] - py[i]) * 0.008 + Math.cos(t * 0.27 + i * 0.11) * 0.15;
+      pz[i] += (tgt.z[i] - pz[i]) * 0.008 + Math.sin(t * 0.21 + i * 0.17) * 0.10;
+      px[i] += vx[i]; py[i] += vy[i]; pz[i] += vz[i];
+      vx[i] *= 0.965; vy[i] *= 0.965; vz[i] *= 0.965;
+
+      var cR = Math.cos(rotY), sR = Math.sin(rotY);
+      var rx = px[i] * cR - pz[i] * sR;
+      var rz = px[i] * sR + pz[i] * cR;
+      var ry = py[i];
+
+      rx += Math.sin(t * 0.3 + ry * 0.005) * 3;
+      ry += Math.cos(t * 0.2 + rx * 0.005) * 2;
+
+      rx -= camX; ry -= camY;
+      var z = rz + camZ;
+      if (z > 12){
+        var sc = FOV / z;
+        sorted.push({
+          x: rx * sc + W/2,
+          y: ry * sc + H/2,
+          z: z,
+          s: psz[i] * sc * 2.0,
+          a: Math.min(1, Math.max(0, (z - 10) / 600)) * 0.85,
+          r: pr[i], g: pg[i], b: pb[i],
+          twS: tw_speed[i], twP: tw_phase[i], hd: hue_drift[i], bo: breath_off[i]
+        });
+      }
+    }
+
+    sorted.sort(function(a, b){ return b.z - a.z; });
+
+    // constellation lines
+    var step = Math.max(1, Math.floor(sorted.length / 220));
+    ctx.lineWidth = 0.32;
+    for (var ci = 0; ci < sorted.length; ci += step){
+      for (var cj = ci + step; cj < sorted.length && cj < ci + step * 5; cj += step){
+        var dx = sorted[ci].x - sorted[cj].x;
+        var dy = sorted[ci].y - sorted[cj].y;
+        var cd = Math.sqrt(dx*dx + dy*dy);
+        if (cd < 110){
+          var la = (1 - cd / 110) * 0.055 * (0.5 + scrollP);
+          ctx.beginPath();
+          ctx.moveTo(sorted[ci].x, sorted[ci].y);
+          ctx.lineTo(sorted[cj].x, sorted[cj].y);
+          ctx.strokeStyle = 'rgba(0,230,118,' + la + ')';
+          ctx.stroke();
+        }
+      }
+    }
+
+    // — particles: soft + bokeh + twinkle
+    for (var j = 0; j < sorted.length; j++){
+      var p = sorted[j];
+      if (p.s < 0.16) continue;
+
+      // each particle twinkles based on its own phase
+      var twk = 0.7 + Math.sin(t * 1.4 + j * 0.17) * 0.3;
+      var pa = p.a * twk;
+
+      // bokeh: tiny particles get softer, large foreground ones get crisper edge
+      var soft = p.z > 700 ? 1.2 : 1.0;
+      var glowR = p.s * 3.0 * soft;
+
+      var grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+      grad.addColorStop(0,    'rgba(' + p.r + ',' + p.g + ',' + p.b + ',' + (pa * 0.95) + ')');
+      grad.addColorStop(0.18, 'rgba(' + p.r + ',' + p.g + ',' + p.b + ',' + (pa * 0.42) + ')');
+      grad.addColorStop(0.5,  'rgba(' + p.r + ',' + p.g + ',' + p.b + ',' + (pa * 0.10) + ')');
+      grad.addColorStop(1,    'rgba(' + p.r + ',' + p.g + ',' + p.b + ',0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(p.x - glowR, p.y - glowR, glowR * 2, glowR * 2);
+
+      // soft pearl core (no harsh white), bigger for foreground
+      if (p.s > 1.3 && p.z < 800){
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.s * 0.42, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,' + Math.min(1, pa * 0.62) + ')';
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.max(0.4, p.s * 0.45 / soft), 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(' + p.r + ',' + p.g + ',' + p.b + ',' + Math.min(1, pa) + ')';
+        ctx.fill();
+      }
+    }
+
+        // waveforms (scroll-reactive)
+    if (scrollP > 0.02){
+      var wa = Math.min(0.14, scrollP * 0.14);
+      ctx.beginPath();
+      for (var wx = 0; wx < W; wx += 2){
+        var wy = H * 0.47 + Math.sin(wx * 0.005 + t * 2) * 38 * scrollP * Math.sin(wx * 0.001 + t * 0.4);
+        if (wx === 0) ctx.moveTo(wx, wy); else ctx.lineTo(wx, wy);
+      }
+      ctx.strokeStyle = 'rgba(0,230,118,' + wa + ')';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.beginPath();
+      for (var wx2 = 0; wx2 < W; wx2 += 2){
+        var wy2 = H * 0.47 + Math.sin(wx2 * 0.008 + t * 2.4 + 1) * 28 * scrollP * Math.cos(wx2 * 0.002 + t * 0.6);
+        if (wx2 === 0) ctx.moveTo(wx2, wy2); else ctx.lineTo(wx2, wy2);
+      }
+      ctx.strokeStyle = 'rgba(68,138,255,' + (wa * 0.55) + ')';
+      ctx.stroke();
+    }
+
+    // glitch line (rare)
+    if (Math.random() < 0.018){
+      var gy = Math.random() * H;
+      ctx.fillStyle = 'rgba(0,230,118,0.08)';
+      ctx.fillRect(0, gy, W, 1);
+    }
+
+    // floating code text
+    ctx.textBaseline = 'middle';
+    for (var k = 0; k < flows.length; k++){
+      var f = flows[k];
+      f.x += f.sp * (1 + scrollP * 2);
+      if (f.x > W + 200){ f.x = -200; f.y = Math.random() * H; }
+      var fa = f.op * (1 + scrollP * 2.5);
+      ctx.font = f.sz + 'px JetBrains Mono, monospace';
+      ctx.fillStyle = 'rgba(0,230,118,' + Math.min(0.14, fa) + ')';
+      ctx.fillText(f.txt, f.x, f.y);
+    }
+
+    // ripples
+    for (var ri = ripples.length - 1; ri >= 0; ri--){
+      var rp = ripples[ri];
+      rp.r += 6;
+      rp.a *= 0.952;
+      ctx.beginPath();
+      ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(0,230,118,' + rp.a + ')';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(rp.x, rp.y, rp.r * 0.6, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(68,138,255,' + (rp.a * 0.5) + ')';
+      ctx.lineWidth = 0.6;
+      ctx.stroke();
+      if (rp.a < 0.012) ripples.splice(ri, 1);
+    }
+
+    
+    // — soft vignette to frame the type
+    var vg = ctx.createRadialGradient(W/2, H/2, Math.min(W,H) * 0.4, W/2, H/2, Math.max(W,H) * 0.85);
+    vg.addColorStop(0, 'rgba(0,0,0,0)');
+    vg.addColorStop(1, 'rgba(0,0,0,0.28)');
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, W, H);
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  // ═══ LLM 70B counter + viz ═══
+  var lc = document.getElementById('llmCanvas'),
+      lctx = lc.getContext('2d'),
+      lW, lH, lVis = false, lProg = 0,
+      lParts = [], MAX_LP = isMob ? 700 : 2000,
+      TARGET = 70000000000;
+
+  function resL(){
+    if (!lc) return;
+    lW = lc.width = lc.offsetWidth;
+    lH = lc.height = lc.offsetHeight;
+  }
+  resL();
+  window.addEventListener('resize', resL);
+
+  var lObs = new IntersectionObserver(function(es){
+    es.forEach(function(e){ lVis = e.isIntersecting; });
+  }, { threshold: 0.08 });
+  var lSec = document.getElementById('llm');
+  if (lSec) lObs.observe(lSec);
+
+  function fmt(n){ return n.toLocaleString('en-US'); }
+
+  function drawL(){
+    if (!lctx){ requestAnimationFrame(drawL); return; }
+    if (lVis && lProg < 1) lProg += 0.0035;
+    if (lProg > 1) lProg = 1;
+
+    var cur = Math.floor(TARGET * lProg);
+    var cnt = Math.floor(MAX_LP * lProg);
+    var ppp = cnt > 0 ? Math.floor(TARGET / MAX_LP) : 0;
+
+    while (lParts.length < cnt){
+      var a = Math.random() * Math.PI * 2;
+      var d = Math.random() * Math.max(lW, lH) * 0.4;
+      lParts.push({
+        x: lW/2 + Math.cos(a) * d,
+        y: lH/2 + Math.sin(a) * d,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        sz: Math.random() * 1.1 + 0.4,
+        col: Math.random() < 0.7 ? [0, 230, 118] : [0, 229, 255]
+      });
+    }
+
+    var num = document.getElementById('llmNum');
+    var scale = document.getElementById('llmScale');
+    var bar = document.getElementById('llmBar');
+    if (num) num.innerHTML = lProg >= 1
+      ? '70<span class="clay">,</span>000<span class="clay">,</span>000<span class="clay">,</span>000'
+      : fmt(cur);
+    if (scale && ppp > 0)
+      scale.textContent = '1 particle ≈ ' + (ppp >= 1e6 ? (ppp/1e6).toFixed(0) + 'M' : ppp.toLocaleString()) + ' params';
+    if (bar) bar.style.width = (lProg * 100) + '%';
+
+    lctx.fillStyle = 'rgba(7,6,12,0.12)';
+    lctx.fillRect(0, 0, lW, lH);
+
+    var cx = lW/2, cy = lH/2;
+    for (var i = 0; i < lParts.length; i++){
+      var p = lParts[i];
+      var dx = cx - p.x, dy = cy - p.y;
+      var dist = Math.sqrt(dx*dx + dy*dy) + 1;
+      var td = 90 + Math.sin(i * 0.08 + t * 1.5) * 30 + lProg * 60;
+      if (dist > td + 15){
+        p.vx += dx/dist * 0.06;
+        p.vy += dy/dist * 0.06;
+      } else if (dist < td - 15){
+        p.vx -= dx/dist * 0.04;
+        p.vy -= dy/dist * 0.04;
+      }
+      p.vx += (-dy/dist) * 0.015;
+      p.vy += ( dx/dist) * 0.015;
+      p.vx += (Math.random() - 0.5) * 0.07 * lProg;
+      p.vy += (Math.random() - 0.5) * 0.07 * lProg;
+      p.vx *= 0.97; p.vy *= 0.97;
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = lW;
+      if (p.x > lW) p.x = 0;
+      if (p.y < 0) p.y = lH;
+      if (p.y > lH) p.y = 0;
+
+      lctx.beginPath();
+      lctx.arc(p.x, p.y, p.sz * (1 + lProg * 0.4), 0, Math.PI * 2);
+      lctx.fillStyle = 'rgba(' + p.col[0] + ',' + p.col[1] + ',' + p.col[2] + ',' + (0.25 + lProg * 0.45) + ')';
+      lctx.fill();
+    }
+
+    if (lProg > 0.01){
+      var gr = lctx.createRadialGradient(cx, cy, 0, cx, cy, 60 + lProg * 80 + Math.sin(t * 2) * 8);
+      gr.addColorStop(0, 'rgba(0,230,118,' + (0.04 + lProg * 0.07) + ')');
+      gr.addColorStop(1, 'rgba(0,0,0,0)');
+      lctx.fillStyle = gr;
+      lctx.fillRect(0, 0, lW, lH);
+    }
+
+    if (lProg > 0 && lProg < 1){
+      lctx.beginPath();
+      lctx.arc(cx, cy, 120 + lProg * 30, -Math.PI/2, -Math.PI/2 + lProg * Math.PI * 2);
+      lctx.strokeStyle = 'rgba(0,230,118,' + (0.18 + lProg * 0.25) + ')';
+      lctx.lineWidth = 1.2;
+      lctx.stroke();
+    }
+    if (lProg >= 1){
+      var pa = 0.14 + Math.sin(t * 2.5) * 0.07;
+      lctx.beginPath();
+      lctx.arc(cx, cy, 150 + Math.sin(t * 1.6) * 4, 0, Math.PI * 2);
+      lctx.strokeStyle = 'rgba(0,230,118,' + pa + ')';
+      lctx.lineWidth = 1;
+      lctx.stroke();
+    }
+
+    requestAnimationFrame(drawL);
+  }
+  drawL();
+
+  // ═══ CHANNELS — global network canvas ═══
+  var ch = document.getElementById('chCanvas');
+  if (ch) {
+    var chx = ch.getContext('2d'),
+        chW, chH, chVis = false, chT = 0;
+    function resCh(){
+      chW = ch.width = ch.offsetWidth;
+      chH = ch.height = ch.offsetHeight;
+    }
+    resCh();
+    window.addEventListener('resize', resCh);
+    var chObs = new IntersectionObserver(function(es){
+      es.forEach(function(e){ chVis = e.isIntersecting; });
+    }, { threshold: 0.05 });
+    chObs.observe(ch);
+
+    // Five regional hubs (positions in 0..1 space, matching .ch-label coords)
+    var hubs = [
+      { x: 0.12, y: 0.14, name: 'NA' },
+      { x: 0.62, y: 0.22, name: 'EU' },
+      { x: 0.08, y: 0.58, name: 'LATAM' },
+      { x: 0.78, y: 0.42, name: 'APAC' },
+      { x: 0.58, y: 0.74, name: 'MEA' }
+    ];
+    var center = { x: 0.5, y: 0.5 };
+
+    // 660 nodes distributed across hubs
+    var nodes = [];
+    var TOTAL = 660;
+    for (var i = 0; i < TOTAL; i++){
+      var hub = hubs[i % hubs.length];
+      var spread = 0.06 + Math.random() * 0.14;
+      var ang = Math.random() * Math.PI * 2;
+      nodes.push({
+        nx: hub.x + Math.cos(ang) * spread,
+        ny: hub.y + Math.sin(ang) * spread,
+        hub: hub,
+        phase: Math.random() * Math.PI * 2,
+        glow: 0
+      });
+    }
+
+    // Active pulses originating from center → traveling out to nodes
+    var pulses = [];
+    var lastBurst = 0;
+
+    function drawCh(){
+      if (!chx){ requestAnimationFrame(drawCh); return; }
+      if (chVis) chT += 0.016;
+
+      // soft fade
+      chx.fillStyle = 'rgba(7,6,12,0.16)';
+      chx.fillRect(0, 0, chW, chH);
+
+      // grid graticule (lat/lon-ish)
+      chx.strokeStyle = 'rgba(42,38,32,0.6)';
+      chx.lineWidth = 1;
+      for (var gy = 0; gy < 6; gy++){
+        chx.beginPath();
+        var y = (gy / 5) * chH;
+        chx.moveTo(0, y); chx.lineTo(chW, y); chx.stroke();
+      }
+      for (var gx = 0; gx < 9; gx++){
+        chx.beginPath();
+        var x = (gx / 8) * chW;
+        chx.moveTo(x, 0); chx.lineTo(x, chH); chx.stroke();
+      }
+
+      // center node (musician's signal)
+      var cx = center.x * chW, cy = center.y * chH;
+      var pulseR = 30 + Math.sin(chT * 1.8) * 6;
+      chx.beginPath();
+      chx.arc(cx, cy, pulseR + 18, 0, Math.PI * 2);
+      var gd = chx.createRadialGradient(cx, cy, 0, cx, cy, pulseR + 18);
+      gd.addColorStop(0, 'rgba(0,230,118,0.32)');
+      gd.addColorStop(1, 'rgba(0,230,118,0)');
+      chx.fillStyle = gd; chx.fill();
+      chx.beginPath();
+      chx.arc(cx, cy, 6, 0, Math.PI * 2);
+      chx.fillStyle = 'rgba(0,230,118,0.95)'; chx.fill();
+
+      // emit pulses on rhythm (every 1.4s when visible)
+      if (chVis && chT - lastBurst > 1.4){
+        lastBurst = chT;
+        // pick one node per hub to receive
+        for (var hi = 0; hi < hubs.length; hi++){
+          for (var pn = 0; pn < 6; pn++){
+            var idx = Math.floor(Math.random() * nodes.length);
+            pulses.push({ to: idx, life: 0, dur: 1.2 + Math.random() * 0.4 });
+          }
+        }
+      }
+
+      // draw and update pulses (line trails)
+      chx.lineWidth = 1.0;
+      for (var p = pulses.length - 1; p >= 0; p--){
+        var pl = pulses[p];
+        pl.life += 0.016;
+        var n = nodes[pl.to];
+        var nx = n.nx * chW, ny = n.ny * chH;
+        var prog = Math.min(1, pl.life / pl.dur);
+        // eased
+        var e = 1 - Math.pow(1 - prog, 2.5);
+        var px = cx + (nx - cx) * e;
+        var py = cy + (ny - cy) * e;
+        // trail
+        chx.beginPath();
+        chx.moveTo(cx + (nx - cx) * Math.max(0, e - 0.18), cy + (ny - cy) * Math.max(0, e - 0.18));
+        chx.lineTo(px, py);
+        chx.strokeStyle = 'rgba(0,230,118,' + (0.55 * (1 - prog)) + ')';
+        chx.stroke();
+        // head
+        chx.beginPath();
+        chx.arc(px, py, 1.6, 0, Math.PI * 2);
+        chx.fillStyle = 'rgba(0,229,255,' + (0.95 * (1 - prog * 0.4)) + ')';
+        chx.fill();
+
+        if (prog >= 1){
+          n.glow = 1;
+          pulses.splice(p, 1);
+        }
+      }
+
+      // static thin connection from each hub to center
+      chx.lineWidth = 0.6;
+      for (var h = 0; h < hubs.length; h++){
+        var hx = hubs[h].x * chW, hy = hubs[h].y * chH;
+        chx.beginPath();
+        chx.moveTo(cx, cy); chx.lineTo(hx, hy);
+        chx.strokeStyle = 'rgba(128,119,105,0.18)';
+        chx.stroke();
+      }
+
+      // nodes (660 platforms)
+      for (var ni = 0; ni < nodes.length; ni++){
+        var nd = nodes[ni];
+        var x = nd.nx * chW;
+        var y = nd.ny * chH;
+        var twinkle = 0.35 + 0.25 * Math.sin(chT * 1.4 + nd.phase);
+        var a = twinkle + nd.glow * 0.6;
+        var sz = 1.0 + nd.glow * 1.8;
+        // outer halo when glowing
+        if (nd.glow > 0.02){
+          var ng = chx.createRadialGradient(x, y, 0, x, y, 8 + nd.glow * 8);
+          ng.addColorStop(0, 'rgba(0,230,118,' + (nd.glow * 0.6) + ')');
+          ng.addColorStop(1, 'rgba(224,138,111,0)');
+          chx.fillStyle = ng;
+          chx.fillRect(x - 14, y - 14, 28, 28);
+        }
+        chx.beginPath();
+        chx.arc(x, y, sz, 0, Math.PI * 2);
+        var col = nd.glow > 0.1
+          ? 'rgba(0,230,118,' + Math.min(1, a) + ')'
+          : 'rgba(0,229,255,' + (a * 0.7) + ')';
+        chx.fillStyle = col;
+        chx.fill();
+
+        nd.glow *= 0.965;
+      }
+
+      // hub markers
+      for (var hh = 0; hh < hubs.length; hh++){
+        var hbx = hubs[hh].x * chW, hby = hubs[hh].y * chH;
+        chx.beginPath();
+        chx.arc(hbx, hby, 4, 0, Math.PI * 2);
+        chx.strokeStyle = 'rgba(0,230,118,0.85)';
+        chx.lineWidth = 1.2;
+        chx.stroke();
+      }
+
+      requestAnimationFrame(drawCh);
+    }
+    drawCh();
+  }
+
+  // ═══ scroll reveal ═══
+  var rObs = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.06 });
+  document.querySelectorAll('.reveal').forEach(function(el){ rObs.observe(el); });
+})();
+</script>
+
+</body>
+</html>
